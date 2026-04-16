@@ -90,8 +90,6 @@ void str(uint16_t i);
 void jmp(uint16_t i);
 void br(uint16_t i);
 void jsr(uint16_t i);
-void start(uint16_t offset);
-
 void rti(uint16_t i);
 void res(uint16_t i);
 void tgetc();
@@ -102,6 +100,7 @@ void thalt();
 void tinu16();
 void toutu16();
 void trap(uint16_t i);
+void start(uint16_t offset);
 void ld_img(char* fname, uint16_t offset);
 
 
