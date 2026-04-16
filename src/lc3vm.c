@@ -44,7 +44,6 @@ uint16_t PC_START = 0x3000;
  *   later as something other than an unsigned integer, but this function
  *   simply reads and returns the 16 bits stored at the indicated address.
  */
-// put your implememtation of mem_read() here below it documentation
 uint16_t mem_read(uint16_t address)
 { return mem[address]; }
 
@@ -63,7 +62,6 @@ uint16_t mem_read(uint16_t address)
  *   stored where requested, it could actually be a signed number, or an ascii
  *   character, or some other type of data.
  */
-
 void mem_write(uint16_t address, uint16_t value)
 { mem[address] = value; }
 
@@ -91,7 +89,6 @@ void mem_write(uint16_t address, uint16_t value)
  *    value. If the off chance that the first two cases aren't met, it returns
  *    0xFFFF.
  */
-// put your implememtation of sign_extend() here below it documentation
 uint16_t sign_extend(uint16_t bits, int sign_postion)
 {
   if ((bits >> (sign_postion - 1)) % 2 == 0)
@@ -121,7 +118,6 @@ uint16_t sign_extend(uint16_t bits, int sign_postion)
  *   was just modified by an operation and needs to have the condition code flags
  *   updated as a side effect of the operation just performed.
  */
-// put your implememtation of update_flags() here below it documentation
 void update_flags(enum registr modified_register)
 {
   if (reg[modified_register] == 0)
@@ -366,9 +362,9 @@ void sti(uint16_t i){
  *   destination and source register operands, and to extract the
  *   second source register or the immediate value encoded in the
  */
-// put your implememtation of str() here below it documentation
-void str(uint16_t i)
-{ mem_write(reg[SR1(i)] + OFF6(i), reg[DR(i)]); }
+void str(uint16_t i){ 
+  mem_write(reg[SR1(i)] + OFF6(i), reg[DR(i)]); 
+}
 
 /** @brief jump unconditionally
  *
@@ -381,7 +377,9 @@ void str(uint16_t i)
  *   destination and source register operands, and to extract the
  *   second source register or the immediate value encoded in the
  */
-// put your implememtation of jmp() here below its documentation
+void jmp(uint16_t i){
+  reg[RPC] = reg[SR1(i)];
+}
 
 /** @brief conditional branch
  *
@@ -399,7 +397,12 @@ void str(uint16_t i)
  *   destination and source register operands, and to extract the
  *   second source register or the immediate value encoded in the
  */
-// put your implememtation of br() here below its documentation
+void br(uint16_t i){
+  if (DR(i) & reg[RCND])
+  {
+    reg[RPC] = reg[RPC] + PCOFF9(i);
+  }
+}
 
 /** @brief jump to/from subtroutine
  *
@@ -412,7 +415,16 @@ void str(uint16_t i)
  *   destination and source register operands, and to extract the
  *   second source register or the immediate value encoded in the
  */
-// put your implememtation of jsr() here below its documentation
+void jsr(uint16_t i){
+  reg[R7] = reg[RPC];
+
+  if(FL(i) == 0){
+    reg[RPC] = reg[SR1(i)];
+  }
+  else if(FL(i) == 1){
+    reg[RPC] = reg[RPC] + PCOFF11(i);
+  }
+}
 
 /** @brief return from interrupt
  *
