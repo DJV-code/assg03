@@ -44,8 +44,9 @@ uint16_t PC_START = 0x3000;
  *   later as something other than an unsigned integer, but this function
  *   simply reads and returns the 16 bits stored at the indicated address.
  */
-uint16_t mem_read(uint16_t address)
-{ return mem[address]; }
+uint16_t mem_read(uint16_t address){ 
+  return mem[address]; 
+}
 
 /** @brief memory write, transfer to memory
  *
@@ -62,8 +63,9 @@ uint16_t mem_read(uint16_t address)
  *   stored where requested, it could actually be a signed number, or an ascii
  *   character, or some other type of data.
  */
-void mem_write(uint16_t address, uint16_t value)
-{ mem[address] = value; }
+void mem_write(uint16_t address, uint16_t value){ 
+  mem[address] = value; 
+}
 
 /** @brief sign extend bits
  *
@@ -89,8 +91,7 @@ void mem_write(uint16_t address, uint16_t value)
  *    value. If the off chance that the first two cases aren't met, it returns
  *    0xFFFF.
  */
-uint16_t sign_extend(uint16_t bits, int sign_postion)
-{
+uint16_t sign_extend(uint16_t bits, int sign_postion){
   if ((bits >> (sign_postion - 1)) % 2 == 0)
   {
     return 0xFFFF >> (16 - sign_postion) & bits;
@@ -118,8 +119,7 @@ uint16_t sign_extend(uint16_t bits, int sign_postion)
  *   was just modified by an operation and needs to have the condition code flags
  *   updated as a side effect of the operation just performed.
  */
-void update_flags(enum registr modified_register)
-{
+void update_flags(enum registr modified_register){
   if (reg[modified_register] == 0)
   {
     reg[RCND] = FZ;
@@ -159,8 +159,7 @@ void update_flags(enum registr modified_register)
  *   second source register or the immediate value encoded in the
  *   instruction.
  */
-void add(uint16_t i)
-{
+void add(uint16_t i){
   if (FIMM(i) == 1)
   {
     reg[DR(i)] = SEXTIMM(i) + reg[SR1(i)];
@@ -192,8 +191,7 @@ void add(uint16_t i)
  *   second source register or the immediate value encoded in the
  *   instruction.
  */
-void andlc(uint16_t i)
-{
+void andlc(uint16_t i){
   if (FIMM(i) == 1)
   {
     reg[DR(i)] = SEXTIMM(i) & reg[SR1(i)];
@@ -218,8 +216,7 @@ void andlc(uint16_t i)
  *   second source register or the immediate value encoded in the
  *   instruction.
  */
-void notlc(uint16_t i)
-{
+void notlc(uint16_t i){
   if (FIMM(i) == 1)
   {
     reg[DR(i)] = ~reg[SR1(i)];
@@ -248,8 +245,7 @@ void notlc(uint16_t i)
  *   destination and source register operands, and to extract the
  *   second source register or the immediate value encoded in the
  */
-void ld(uint16_t i)
-{
+void ld(uint16_t i){
   reg[DR(i)] = mem_read(reg[RPC] + PCOFF9(i));
   update_flags(DR(i));
 }
@@ -269,8 +265,7 @@ void ld(uint16_t i)
  *   destination and source register operands, and to extract the
  *   second source register or the immediate value encoded in the
  */
-void ldi(uint16_t i)
-{
+void ldi(uint16_t i){
   reg[DR(i)] = mem_read(mem_read(reg[RPC] + PCOFF9(i)));
   update_flags(DR(i));
 }
@@ -289,8 +284,7 @@ void ldi(uint16_t i)
  *   destination and source register operands, and to extract the
  *   second source register or the immediate value encoded in the
  */
-void ldr(uint16_t i)
-{
+void ldr(uint16_t i){
   reg[DR(i)] = mem_read(reg[SR1(i)] + OFF6(i));
   update_flags(DR(i));
 }
@@ -578,8 +572,7 @@ void trap(uint16_t i)
  * looking up and invoking the (microcode) instruction function from this
  * lookup table.
  */
-// you need to declare the operator execution lookup table here.  This will be an
-// array of function pointers to your opcode microcode execution functions.
+op_ex_f microcode_table[NUMOPS] = {br,add, ld, st, jsr, andlc, ldr, str, rti, notlc, ldi, sti, jmp, lea, res, trap };
 
 /** @brief start/run LC-3 simulator
  *
@@ -596,7 +589,15 @@ void trap(uint16_t i)
  *   a 16-bit (signed) offset from this location and start there instead
  *   in this routine.
  */
-// put your implememtation of start() here below its documentation
+void start(uint16_t offset){
+  reg[RPC] = reg[RPC] + offset;
+  
+  while(running){
+    uint16_t ins = mem_read(reg[RPC]);
+    reg[RPC] = reg[RPC] + 1;
+    microcode_table[OPC(ins)](ins);
+  }
+}
 
 /** @brief load an LC-3 machine instruction image
  *

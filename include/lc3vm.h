@@ -73,20 +73,6 @@ extern uint16_t mem[];
 extern uint16_t reg[];
 extern uint16_t PC_START;
 
-// your task functions should go here
-
-void rti(uint16_t i);
-void res(uint16_t i);
-void tgetc();
-void tout();
-void tputs();
-void tin();
-void thalt();
-void tinu16();
-void toutu16();
-void trap(uint16_t i);
-void ld_img(char* fname, uint16_t offset);
-
 uint16_t mem_read(uint16_t address);
 void mem_write(uint16_t address, uint16_t value);
 uint16_t sign_extend(uint16_t bits, int sign_position);
@@ -104,6 +90,21 @@ void str(uint16_t i);
 void jmp(uint16_t i);
 void br(uint16_t i);
 void jsr(uint16_t i);
+void start(uint16_t offset);
+
+void rti(uint16_t i);
+void res(uint16_t i);
+void tgetc();
+void tout();
+void tputs();
+void tin();
+void thalt();
+void tinu16();
+void toutu16();
+void trap(uint16_t i);
+void ld_img(char* fname, uint16_t offset);
+
+
 
 #ifdef TEST
 } // end extern C for C++ test runner
