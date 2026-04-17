@@ -94,11 +94,11 @@ void mem_write(uint16_t address, uint16_t value){
 uint16_t sign_extend(uint16_t bits, int sign_postion){
   if ((bits >> (sign_postion - 1)) % 2 == 0)
   {
-    return 0xFFFF >> (16 - sign_postion) & bits;
+    return (0xFFFF >> (16 - sign_postion)) & bits;
   }
   else if ((bits >> (sign_postion - 1)) % 2 == 1)
   {
-    return 0xFFFF << sign_postion | bits;
+    return (0xFFFF << sign_postion) | bits;
   }
   else
   {
@@ -124,11 +124,11 @@ void update_flags(enum registr modified_register){
   {
     reg[RCND] = FZ;
   }
-  else if ((reg[modified_register] >> 15) % 2 == 0)
+  else if ((reg[modified_register] >> 15) == 0)
   {
     reg[RCND] = FP;
   }
-  else if ((reg[modified_register] >> 15) % 2 == 1)
+  else if ((reg[modified_register] >> 15) == 1)
   {
     reg[RCND] = FN;
   }
@@ -217,15 +217,7 @@ void andlc(uint16_t i){
  *   instruction.
  */
 void notlc(uint16_t i){
-  if (FIMM(i) == 1)
-  {
-    reg[DR(i)] = ~reg[SR1(i)];
-  }
-  else if (FIMM(i) == 0)
-  {
-    reg[DR(i)] = ~reg[SR1(i)];
-  }
-
+  reg[DR(i)] = ~reg[SR1(i)];
   update_flags(DR(i));
 }
 
@@ -590,7 +582,7 @@ op_ex_f microcode_table[NUMOPS] = {br,add, ld, st, jsr, andlc, ldr, str, rti, no
  *   in this routine.
  */
 void start(uint16_t offset){
-  reg[RPC] = reg[RPC] + offset;
+  reg[RPC] = PC_START + offset;
   
   while(running){
     uint16_t ins = mem_read(reg[RPC]);

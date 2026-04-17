@@ -15,15 +15,12 @@
 #include "lc3vm.h"
 #include "lc3vm_dbg.h"
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ld_img(argv[1], 0x0);
   fprintf(stdout, "Occupied memory after program load:\n");
   fprintf_mem_nonzero(stdout, mem, UINT16_MAX);
-  // Full system tests, to get the system tests to work and this simulation
-  // to finally run, uncomment the call to the start() main function that you
-  // should have implemented in task 9.
-  start(0x0); 
+  start(0x0);
   fprintf(stdout, "Occupied memory after program execution:\n");
   fprintf_mem_nonzero(stdout, mem, UINT16_MAX);
   fprintf(stdout, "Registers after program execution:\n");
